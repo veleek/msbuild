@@ -677,14 +677,15 @@ namespace Microsoft.Build.BackEnd
             public bool Equals(TaskItem x, TaskItem y) => x.Equals(y);
             public int GetHashCode(TaskItem obj)
             {
+                return obj.GetHashCodeDeep();
 
-                if (!hashCache.TryGetValue(obj, out int hashCode))
-                {
-                    hashCode = obj.GetHashCodeDeep();
-                    hashCache[obj] = hashCode;
-                }
+                // if (!hashCache.TryGetValue(obj, out int hashCode))
+                // {
+                //     hashCode = obj.GetHashCodeDeep();
+                //     hashCache[obj] = hashCode;
+                // }
 
-                return hashCode;
+                // return hashCode;
             }
         }
 
