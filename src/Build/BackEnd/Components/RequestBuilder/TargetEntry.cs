@@ -672,20 +672,36 @@ namespace Microsoft.Build.BackEnd
 
         public class DeepItemEqualityComparer : IEqualityComparer<TaskItem>
         {
-            private Dictionary<TaskItem, int> hashCache = new Dictionary<TaskItem, int>();
+            private Dictionary<TaskItem, int> hashCache = new Dictionary<TaskItem, int>(ReferenceEqualityComparer.Instance);
 
             public bool Equals(TaskItem x, TaskItem y) => x.Equals(y);
             public int GetHashCode(TaskItem obj)
             {
-                return obj.GetHashCodeDeep();
+                // return obj.GetHashCodeDeep();
 
-                // if (!hashCache.TryGetValue(obj, out int hashCode))
-                // {
-                //     hashCode = obj.GetHashCodeDeep();
-                //     hashCache[obj] = hashCode;
-                // }
+                if (!hashCache.TryGetValue(obj, out int hashCode))
+                {
+                    hashCode = obj.GetHashCodeDeep();
+                    hashCache[obj] = hashCode;
+                }
 
-                // return hashCode;
+                return hashCode;
+            }
+        }
+
+        public class ReferenceEqualityComparer : IEqualityComparer<TaskItem>
+        {
+            public static ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
+
+            bool IEqualityComparer<TaskItem>.Equals(TaskItem x, TaskItem y) => object.ReferenceEquals(x, y);
+            int IEqualityComparer<TaskItem>.GetHashCode(TaskItem obj)
+            {
+                if (obj == null)
+                {
+                    return 0;
+                }
+
+                return obj.GetHashCode();
             }
         }
 
