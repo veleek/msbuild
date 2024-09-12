@@ -1498,6 +1498,45 @@ namespace Microsoft.Build.Execution
                 return StringComparer.OrdinalIgnoreCase.GetHashCode(ItemSpec);
             }
 
+            public int GetHashCodeDeep()
+            {
+                var hash = this.GetHashCode();
+
+                // var thisNames = new HashSet<string>(MSBuildNameIgnoreCaseComparer.Default);
+
+                // if (_itemDefinitions is not null)
+                // {
+                //     foreach (ProjectItemDefinitionInstance itemDefinition in _itemDefinitions)
+                //     {
+                //         thisNames.UnionWith(itemDefinition.MetadataNames);
+                //     }
+                // }
+
+                // if (_directMetadata is not null)
+                // {
+                //     foreach (ProjectMetadataInstance metadatum in _directMetadata)
+                //     {
+                //         thisNames.Add(metadatum.Name);
+                //     }
+                // }
+
+                // ITaskItem2 thisAsITaskItem2 = this;
+
+                // foreach(var name in thisNames)
+                // {
+                //     var value = thisAsITaskItem2.GetMetadataValueEscaped(name).ToLowerInvariant();
+                //     hash = hash * 23 + value.GetHashCode();
+                // }
+
+                foreach (var metadatum in this.MetadataCollection)
+                {
+                    hash = hash * 23 + metadatum.Name.ToLowerInvariant().GetHashCode();
+                    hash = hash * 23 + metadatum.EvaluatedValueEscaped.ToLowerInvariant().GetHashCode();
+                }
+
+                return hash;
+            }
+
             /// <summary>
             /// Override of Equals
             /// </summary>
